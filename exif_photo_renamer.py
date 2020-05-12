@@ -66,11 +66,13 @@ def rename_files(path):
     try:
         for f in listdir(path):
             if isfile(join(path, f)) and f.casefold().endswith('.jpg'):
-                exif = get_exif(path + '\\' + f)
+                original_file_path = path + '\\' + f
+                exif = get_exif(original_file_path)
                 selected_data = get_selected_exif(exif)
                 if not check_for_empty_values(selected_data):
                     print('renaming JPG file...')
-                    # os.rename(path + '\\' + f, path + '\\' + build_new_filename(selected_data) + '.jpg')
+                    new_file_path = path + '\\' + build_new_filename(selected_data) + '.jpg'
+                    # os.rename(original_file_path, new_file_path)
                     f_raw = check_for_raw_file(path, f)
                     if f_raw:
                         print('and renaming NEF file too...')
