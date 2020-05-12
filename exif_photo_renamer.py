@@ -72,12 +72,16 @@ def rename_files(path):
                 selected_data = get_selected_exif(exif)
                 if not check_for_empty_values(selected_data):
                     print('renaming JPG file...')
-                    new_file_path = path + '\\' + build_new_filename(selected_data) + '.jpg'
+                    new_filename = build_new_filename(selected_data)
+                    new_file_path = path + '\\' + new_filename + '.jpg'
                     # os.rename(original_file_path, new_file_path)
                     renamed_files_count = renamed_files_count + 1
                     f_raw = check_for_raw_file(path, f)
                     if f_raw:
                         print('and renaming NEF file too...')
+                        original_file_path = path + '\\' + f_raw
+                        new_file_path = path + '\\' + new_filename + '.nef'
+                        # os.rename(original_file_path, new_file_path)
                         renamed_files_count = renamed_files_count + 1
                 print('new filename:')
                 print(build_new_filename(selected_data))
