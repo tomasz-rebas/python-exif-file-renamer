@@ -25,33 +25,33 @@ def get_labeled_exif(exif):
     return labeled
 
 def get_selected_exif(exif):
-    selected = {'DateTimeOriginal': '', 'MaxApertureValue': '', 'FocalLength': '', 'SubsecTimeOriginal': '', 'ExposureTime': '', 'ISOSpeedRatings': ''}
+    selected_data = {'DateTimeOriginal': '', 'MaxApertureValue': '', 'FocalLength': '', 'SubsecTimeOriginal': '', 'ExposureTime': '', 'ISOSpeedRatings': ''}
     for (key, val) in exif.items():
-        if TAGS.get(key) in selected:
-            selected[TAGS.get(key)] = val
-    return selected
+        if TAGS.get(key) in selected_data:
+            selected_data[TAGS.get(key)] = val
+    return selected_data
 
-def check_for_empty_values(selected):
-    for key in selected:
-        if selected[key] == '':
+def check_for_empty_values(selected_data):
+    for key in selected_data:
+        if selected_data[key] == '':
             return True
     return False
 
-def build_new_filename(selected):
+def build_new_filename(selected_data):
     new_filename = ''
-    selected['DateTimeOriginal'] = selected['DateTimeOriginal'].replace(':', '')
-    selected['DateTimeOriginal'] = selected['DateTimeOriginal'].replace(' ', '_')
-    new_filename += selected['DateTimeOriginal']
-    new_filename += selected['SubsecTimeOriginal'] + '_'
-    new_filename += str(int(selected['FocalLength'][0] / selected['FocalLength'][1])) + 'mm_'
+    selected_data['DateTimeOriginal'] = selected_data['DateTimeOriginal'].replace(':', '')
+    selected_data['DateTimeOriginal'] = selected_data['DateTimeOriginal'].replace(' ', '_')
+    new_filename += selected_data['DateTimeOriginal']
+    new_filename += selected_data['SubsecTimeOriginal'] + '_'
+    new_filename += str(int(selected_data['FocalLength'][0] / selected_data['FocalLength'][1])) + 'mm_'
 
-    if selected['ExposureTime'][0] < selected['ExposureTime'][1]:
-        new_filename += str(selected['ExposureTime'][0] / 10) + '-' + str(selected['ExposureTime'][1] / 10) + 's_'
+    if selected_data['ExposureTime'][0] < selected_data['ExposureTime'][1]:
+        new_filename += str(selected_data['ExposureTime'][0] / 10) + '-' + str(selected_data['ExposureTime'][1] / 10) + 's_'
     else:
-        new_filename += str(selected['ExposureTime'][0] / 10) + 's_'
+        new_filename += str(selected_data['ExposureTime'][0] / 10) + 's_'
 
-    new_filename += 'f' + str(selected['MaxApertureValue'][0] / selected['MaxApertureValue'][1]) + '_'
-    new_filename += 'ISO-' + str(selected['ISOSpeedRatings'])
+    new_filename += 'f' + str(selected_data['MaxApertureValue'][0] / selected_data['MaxApertureValue'][1]) + '_'
+    new_filename += 'ISO-' + str(selected_data['ISOSpeedRatings'])
     
     return new_filename.replace('.0', '')
 
@@ -66,22 +66,21 @@ def rename_files(path):
     for f in listdir(path):
         if isfile(join(path, f)) and f.casefold().endswith('.jpg'):
             exif = get_exif(path + '\\' + f)
-            selected = get_selected_exif(exif)
-            if not check_for_empty_values(selected):
+            selected_data = get_selected_exif(exif)
+            if not check_for_empty_values(selected_data):
                 print('renaming JPG file...')
-                # os.rename(path + '\\' + f, path + '\\' + build_new_filename(selected) + '.jpg')
+                # os.rename(path + '\\' + f, path + '\\' + build_new_filename(selected_data) + '.jpg')
                 f_raw = check_for_raw_file(path, f)
                 if f_raw:
                     print('and renaming NEF file too...')
     print('new filename:')
-    print(selected)
-    print(build_new_filename(selected))
+    print(build_new_filename(selected_data))
     print(sys.argv[1])
 
 # path = 'D:\python_test_photos'
 # onlyfiles = [f for f in listdir(path) if isfile(join(path, f))]
 # exif = get_exif(path + '\photo.jpg')
-# selected = get_selected_exif(exif)
+# selected_data = get_selected_exif(exif)
 
 # os.rename(r'D:\python_test_photos\photo.jpg', r'D:\python_test_photos\photo_renamed.jpg')
 
