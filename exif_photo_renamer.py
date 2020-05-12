@@ -9,6 +9,9 @@ from os.path import isfile, join
 # import for file renaming
 import os
 
+# import for using arguments
+import sys
+
 def get_exif(filename):
     image = Image.open(filename)
     image.verify()
@@ -59,6 +62,21 @@ def check_for_raw_file(path, f):
     else:
         return False
 
+def rename_files(path):
+    for f in listdir(path):
+        if isfile(join(path, f)) and f.casefold().endswith('.jpg'):
+            exif = get_exif(path + '\\' + f)
+            selected = get_selected_exif(exif)
+            if not check_for_empty_values(selected):
+                print('renaming JPG file...')
+                # os.rename(path + '\\' + f, path + '\\' + build_new_filename(selected) + '.jpg')
+                f_raw = check_for_raw_file(path, f)
+                if f_raw:
+                    print('and renaming NEF file too...')
+    print('new filename:')
+    print(build_new_filename(selected))
+    print(sys.argv[1])
+
 # path = 'D:\python_test_photos'
 # onlyfiles = [f for f in listdir(path) if isfile(join(path, f))]
 # exif = get_exif(path + '\photo.jpg')
@@ -68,26 +86,11 @@ def check_for_raw_file(path, f):
 
 #######################
 
-path = 'D:\python_test_photos'
-
-for f in listdir(path):
-    if isfile(join(path, f)) and f.casefold().endswith('.jpg'):
-        exif = get_exif(path + '\\' + f)
-        selected = get_selected_exif(exif)
-        if not check_for_empty_values(selected):
-            print('renaming JPG file...')
-            # os.rename(path + '\\' + f, path + '\\' + build_new_filename(selected) + '.jpg')
-            f_raw = check_for_raw_file(path, f)
-            if f_raw:
-                print('and renaming NEF file too...')
         
-    
-
+path = 'D:\python_test_photos'
+rename_files(path)
 
 
 #######################
 
-
-print('new filename:')
-print(build_new_filename(selected))
 #print(onlyfiles)
