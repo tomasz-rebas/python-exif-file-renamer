@@ -63,19 +63,22 @@ def check_for_raw_file(path, f):
         return False
 
 def rename_files(path):
-    for f in listdir(path):
-        if isfile(join(path, f)) and f.casefold().endswith('.jpg'):
-            exif = get_exif(path + '\\' + f)
-            selected_data = get_selected_exif(exif)
-            if not check_for_empty_values(selected_data):
-                print('renaming JPG file...')
-                # os.rename(path + '\\' + f, path + '\\' + build_new_filename(selected_data) + '.jpg')
-                f_raw = check_for_raw_file(path, f)
-                if f_raw:
-                    print('and renaming NEF file too...')
-    print('new filename:')
-    print(build_new_filename(selected_data))
-    print(sys.argv[1])
+    try:
+        for f in listdir(path):
+            if isfile(join(path, f)) and f.casefold().endswith('.jpg'):
+                exif = get_exif(path + '\\' + f)
+                selected_data = get_selected_exif(exif)
+                if not check_for_empty_values(selected_data):
+                    print('renaming JPG file...')
+                    # os.rename(path + '\\' + f, path + '\\' + build_new_filename(selected_data) + '.jpg')
+                    f_raw = check_for_raw_file(path, f)
+                    if f_raw:
+                        print('and renaming NEF file too...')
+                print('new filename:')
+                print(build_new_filename(selected_data))
+                print(sys.argv[1])
+    except FileNotFoundError:
+        print('Error: file not found. Please make sure you provided correct path.')
 
 # path = 'D:\python_test_photos'
 # onlyfiles = [f for f in listdir(path) if isfile(join(path, f))]
