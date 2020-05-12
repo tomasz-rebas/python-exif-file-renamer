@@ -87,7 +87,7 @@ def rename_files(path):
 #######################
 
 try:
-    path = 'D:\python_test_photos'
+    path = sys.argv[1]
     rename_files(path)
 except IndexError:
     print('Error: no argument provided. Please provide an absolute path to the directory containing files you want to rename.')
