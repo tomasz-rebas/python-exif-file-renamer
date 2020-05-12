@@ -64,6 +64,7 @@ def check_for_raw_file(path, f):
 
 def rename_files(path):
     try:
+        renamed_files_count = 0
         for f in listdir(path):
             if isfile(join(path, f)) and f.casefold().endswith('.jpg'):
                 original_file_path = path + '\\' + f
@@ -73,12 +74,15 @@ def rename_files(path):
                     print('renaming JPG file...')
                     new_file_path = path + '\\' + build_new_filename(selected_data) + '.jpg'
                     # os.rename(original_file_path, new_file_path)
+                    renamed_files_count = renamed_files_count + 1
                     f_raw = check_for_raw_file(path, f)
                     if f_raw:
                         print('and renaming NEF file too...')
+                        renamed_files_count = renamed_files_count + 1
                 print('new filename:')
                 print(build_new_filename(selected_data))
                 print(sys.argv[1])
+        print('Done! Renamed ' + str(renamed_files_count) + ' files.')
     except FileNotFoundError:
         print('Error: file not found. Please make sure you provided correct path.')
 
