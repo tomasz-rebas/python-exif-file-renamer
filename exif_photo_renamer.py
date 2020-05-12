@@ -74,6 +74,7 @@ def rename_files(path):
                 if f_raw:
                     print('and renaming NEF file too...')
     print('new filename:')
+    print(selected)
     print(build_new_filename(selected))
     print(sys.argv[1])
 
@@ -86,9 +87,11 @@ def rename_files(path):
 
 #######################
 
-        
-path = 'D:\python_test_photos'
-rename_files(path)
+try:
+    path = 'D:\python_test_photos'
+    rename_files(path)
+except IndexError:
+    print('Error: no argument provided. Please provide an absolute path to the directory containing files you want to rename.')
 
 
 #######################
