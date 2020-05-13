@@ -70,7 +70,7 @@ def rename_files(path, files_count):
             for f in files:
                 # print(join(root, f))
                 progress_percentage = (scanned_files_count / files_count) * 100
-                print('Renaming. Progress: ' + "%.2f" % round(progress_percentage, 2) + '%', end="\r")
+                print('Renaming. Progress: ' + "%.2f" % round(progress_percentage, 2) + '%', end='\r')
                 if isfile(join(root, f)) and f.casefold().endswith('.jpg'):
                     original_file_path = root + '\\' + f
                     exif = get_exif(original_file_path)
@@ -89,7 +89,7 @@ def rename_files(path, files_count):
                             # os.rename(original_file_path, new_file_path)
                             renamed_files_count = renamed_files_count + 1
                 scanned_files_count = scanned_files_count + 1
-        print('Done! Renamed ' + str(renamed_files_count) + ' files.')
+        print('Done! Renamed ' + str(renamed_files_count) + ' files. ')
     except FileNotFoundError:
         print('Error: file not found. Please make sure you provided correct path.')
 
