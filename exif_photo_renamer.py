@@ -62,12 +62,15 @@ def check_for_raw_file(path, f):
     else:
         return False
 
-def rename_files(path):
+def rename_files(path, files_count):
     try:
         renamed_files_count = 0
+        scanned_files_count = 0
         for root, dirs, files in os.walk(path):
             for f in files:
-                print(join(root, f))
+                # print(join(root, f))
+                progress_percentage = (scanned_files_count / files_count) * 100
+                print('Renaming. Progress: ' + "%.2f" % round(progress_percentage, 2) + '%', end="\r")
                 if isfile(join(root, f)) and f.casefold().endswith('.jpg'):
                     original_file_path = root + '\\' + f
                     exif = get_exif(original_file_path)
@@ -85,6 +88,7 @@ def rename_files(path):
                             new_file_path = root + '\\' + new_filename + '.nef'
                             # os.rename(original_file_path, new_file_path)
                             renamed_files_count = renamed_files_count + 1
+                scanned_files_count = scanned_files_count + 1
         print('Done! Renamed ' + str(renamed_files_count) + ' files.')
     except FileNotFoundError:
         print('Error: file not found. Please make sure you provided correct path.')
@@ -98,11 +102,13 @@ def count_files(path):
 
 try:
     path = sys.argv[1]
-    print('The program is going to iterate through ' + str(count_files(path)) + ' files.')
+    print('Counting files...')
+    files_count = count_files(path)
+    print('The program is going to iterate through ' + str(files_count) + ' files.')
     print('Are you sure? [y/n]')
     yes = {'yes', 'y'}
     choice = input().lower()
     if choice in yes:
-        rename_files(path)
+        rename_files(path, files_count)
 except IndexError:
     print('Error: no argument provided. Please provide an absolute path to the directory containing files you want to rename.')
