@@ -1,3 +1,17 @@
+# How does it work?
+
+`exif_photo_renamer.py` was designed to automate renaming photo files with an information useful for photographers e.g. date, exposure time and aperture. It extracts metadata from image files and uses it to rename them.
+
+New filename follows this pattern:
+
+### `DATE_TIME_FOCALLENGTH_EXPOSURE_APERTURE_ISO`
+
+Example:
+
+`20180515_16025102_70mm_1-360s_f7.1_ISO-1600`
+
+The script is looking for JPG files first, but it also checks for Nikon RAW (.nef) files of the same name and renames them as well if they're exist. 
+
 # Installation
  
 Make sure you have Python installed. You can check it by running this command in terminal:
