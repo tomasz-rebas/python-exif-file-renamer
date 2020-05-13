@@ -65,47 +65,48 @@ def check_for_raw_file(path, f):
 def rename_files(path):
     try:
         renamed_files_count = 0
-        for f in listdir(path):
-            if isfile(join(path, f)) and f.casefold().endswith('.jpg'):
-                original_file_path = path + '\\' + f
-                exif = get_exif(original_file_path)
-                selected_data = get_selected_exif(exif)
-                if not check_for_empty_values(selected_data):
-                    print('renaming JPG file...')
-                    new_filename = build_new_filename(selected_data)
-                    new_file_path = path + '\\' + new_filename + '.jpg'
-                    # os.rename(original_file_path, new_file_path)
-                    renamed_files_count = renamed_files_count + 1
-                    f_raw = check_for_raw_file(path, f)
-                    if f_raw:
-                        print('and renaming NEF file too...')
-                        original_file_path = path + '\\' + f_raw
-                        new_file_path = path + '\\' + new_filename + '.nef'
+        for root, dirs, files in os.walk(path):
+            for f in files:
+                print(join(root, f))
+                if isfile(join(root, f)) and f.casefold().endswith('.jpg'):
+                    original_file_path = root + '\\' + f
+                    exif = get_exif(original_file_path)
+                    selected_data = get_selected_exif(exif)
+                    if not check_for_empty_values(selected_data):
+                        # renaming JPG file
+                        new_filename = build_new_filename(selected_data)
+                        new_file_path = root + '\\' + new_filename + '.jpg'
                         # os.rename(original_file_path, new_file_path)
                         renamed_files_count = renamed_files_count + 1
-                print('new filename:')
-                print(build_new_filename(selected_data))
-                print(sys.argv[1])
+                        f_raw = check_for_raw_file(root, f)
+                        if f_raw:
+                            # renaming NEF file
+                            original_file_path = root + '\\' + f_raw
+                            new_file_path = root + '\\' + new_filename + '.nef'
+                            # os.rename(original_file_path, new_file_path)
+                            renamed_files_count = renamed_files_count + 1
         print('Done! Renamed ' + str(renamed_files_count) + ' files.')
     except FileNotFoundError:
         print('Error: file not found. Please make sure you provided correct path.')
 
-# path = 'D:\python_test_photos'
-# onlyfiles = [f for f in listdir(path) if isfile(join(path, f))]
-# exif = get_exif(path + '\photo.jpg')
-# selected_data = get_selected_exif(exif)
-
-# os.rename(r'D:\python_test_photos\photo.jpg', r'D:\python_test_photos\photo_renamed.jpg')
-
-#######################
+def count_files(path):
+    count = 0
+    for root, dirs, files in os.walk(path):
+        for f in files:
+            count = count + 1
+    return count
 
 try:
     path = sys.argv[1]
-    rename_files(path)
+    print('The program is going to iterate through ' + str(count_files(path)) + ' files.')
+    print('Are you sure? [y/n]')
+
+    yes = {'yes', 'y'}
+    choice = input().lower()
+
+    if choice in yes:
+        rename_files(path)
+    else:
+        print('no doing anything')
 except IndexError:
     print('Error: no argument provided. Please provide an absolute path to the directory containing files you want to rename.')
-
-
-#######################
-
-#print(onlyfiles)
