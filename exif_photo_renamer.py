@@ -100,13 +100,9 @@ try:
     path = sys.argv[1]
     print('The program is going to iterate through ' + str(count_files(path)) + ' files.')
     print('Are you sure? [y/n]')
-
     yes = {'yes', 'y'}
     choice = input().lower()
-
     if choice in yes:
         rename_files(path)
-    else:
-        print('no doing anything')
 except IndexError:
     print('Error: no argument provided. Please provide an absolute path to the directory containing files you want to rename.')
