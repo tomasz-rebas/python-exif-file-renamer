@@ -24,6 +24,8 @@ And you're ready to go!
 
 Run `exif_photo_renamer.py` script and pass (as an argument) path to the folder containing photos you want to rename.
 
-You can do this by running the following command:
+You can do this by navigating to the directory with the script and running the following command:
 
-`[PATH_TO_python.exe] [PATH_TO_exif_photo_renamer.py] [PATH_TO_FOLDER_WITH_PHOTOS]`
+### `python.exe exif_photo_renamer.py MyFolder`
+
+You need to specify an absolute path for the directory.
