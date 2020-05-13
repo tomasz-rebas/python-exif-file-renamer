@@ -66,30 +66,43 @@ def rename_files(path, files_count):
     try:
         renamed_files_count = 0
         scanned_files_count = 0
+        attribute_errors = []
         for root, dirs, files in os.walk(path):
             for f in files:
                 # print(join(root, f))
                 progress_percentage = (scanned_files_count / files_count) * 100
-                print('Renaming. Progress: ' + "%.2f" % round(progress_percentage, 2) + '%', end='\r')
+                print('Renaming. Progress: ' + "%.2f" % round(progress_percentage, 2) + '%. File: ' + join(root, f), end='\r')
                 if isfile(join(root, f)) and f.casefold().endswith('.jpg'):
-                    original_file_path = root + '\\' + f
-                    exif = get_exif(original_file_path)
-                    selected_data = get_selected_exif(exif)
-                    if not check_for_empty_values(selected_data):
-                        # renaming JPG file
-                        new_filename = build_new_filename(selected_data)
-                        new_file_path = root + '\\' + new_filename + '.jpg'
-                        # os.rename(original_file_path, new_file_path)
-                        renamed_files_count = renamed_files_count + 1
-                        f_raw = check_for_raw_file(root, f)
-                        if f_raw:
-                            # renaming NEF file
-                            original_file_path = root + '\\' + f_raw
-                            new_file_path = root + '\\' + new_filename + '.nef'
+                    try:
+                        original_file_path = root + '\\' + f
+                        exif = get_exif(original_file_path)
+                        selected_data = get_selected_exif(exif)
+                        if not check_for_empty_values(selected_data):
+                            # renaming JPG file
+                            new_filename = build_new_filename(selected_data)
+                            new_file_path = root + '\\' + new_filename + '.jpg'
                             # os.rename(original_file_path, new_file_path)
                             renamed_files_count = renamed_files_count + 1
+                            f_raw = check_for_raw_file(root, f)
+                            if f_raw:
+                                # renaming NEF file
+                                original_file_path = root + '\\' + f_raw
+                                new_file_path = root + '\\' + new_filename + '.nef'
+                                # os.rename(original_file_path, new_file_path)
+                                renamed_files_count = renamed_files_count + 1
+                    except AttributeError:
+                        attribute_errors.append(original_file_path)
                 scanned_files_count = scanned_files_count + 1
+        print()
+        if len(attribute_errors) == 1:
+            print("Warning! AttributeError has occured. This file couldn't be renamed:")
+            print(attribute_errors[0])
+        elif len(attribute_errors) > 1:
+            print("Warning! AttributeError has occured. The following files couldn't be renamed:")
+            for f in attribute_errors:
+                print(f)
         print('Done! Renamed ' + str(renamed_files_count) + ' files. ')
+
     except FileNotFoundError:
         print('Error: file not found. Please make sure you provided correct path.')
 
