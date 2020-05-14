@@ -62,6 +62,30 @@ def check_for_raw_file(path, f):
     else:
         return False
 
+def handle_duplicate_filename(path):
+    path_splitted = path.split('\\')
+    filename = path_splitted[-1]
+    filename_splitted = filename.split('_')
+    last_filename_segment = filename_splitted[-1].split('.')[0]
+    file_extension = filename_splitted[-1].split('.')[1]
+
+    if filename_splitted[-1].startswith('ISO'):
+        # print(path[:-4] + '_2.' + file_extension)
+        return path[:-4] + '_2.' + file_extension
+    else: # last fragment must be a number
+        last_filename_segment = str(int(last_filename_segment) + 1)
+        filename_splitted[-1] = last_filename_segment + '.' + file_extension
+        filename = '_'.join(filename_splitted)
+        path_splitted[-1] = filename
+        # print('\\'.join(path_splitted))
+        return '\\'.join(path_splitted)
+
+def rename_file(original_file_path, new_file_path):
+    try:
+        os.rename(original_file_path, new_file_path)
+    except FileExistsError:
+        rename_file(original_file_path, handle_duplicate_filename(new_file_path))
+
 def rename_files(path, files_count):
     try:
         renamed_jpg_files_count = 0
@@ -82,19 +106,17 @@ def rename_files(path, files_count):
                             # renaming JPG file
                             new_filename = build_new_filename(selected_data)
                             new_file_path = root + '\\' + new_filename + '.jpg'
-                            os.rename(original_file_path, new_file_path)
+                            rename_file(original_file_path, new_file_path)
                             renamed_jpg_files_count = renamed_jpg_files_count + 1
                             f_raw = check_for_raw_file(root, f)
                             if f_raw:
                                 # renaming NEF file
                                 original_file_path = root + '\\' + f_raw
                                 new_file_path = root + '\\' + new_filename + '.nef'
-                                os.rename(original_file_path, new_file_path)
+                                rename_file(original_file_path, new_file_path)
                                 renamed_raw_files_count = renamed_raw_files_count + 1
                     except AttributeError:
                         attribute_errors.append(original_file_path)
-                    except FileExistsError:
-                        {}
                 scanned_files_count = scanned_files_count + 1
         print()
         if len(attribute_errors) == 1:
