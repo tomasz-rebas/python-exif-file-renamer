@@ -119,7 +119,7 @@ def rename_files(path, files_count):
             for f in files:
                 # print(join(root, f))
                 progress_percentage = (scanned_files_count / files_count) * 100
-                print('Renaming. Progress: ' + "%.2f" % round(progress_percentage, 2) + '%. File: ' + join(root, f) + ' ' * 30, end='\r')
+                print('Renaming. Progress: ' + "%.2f" % round(progress_percentage, 2) + '%. File: ' + join(root, f))
                 if isfile(join(root, f)) and f.casefold().endswith('.jpg'):
                     try:
                         original_file_path = root + '\\' + f
