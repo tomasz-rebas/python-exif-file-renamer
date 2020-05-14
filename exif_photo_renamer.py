@@ -96,7 +96,9 @@ def print_attribute_error_logs(attribute_errors):
             print(f)
 
 def print_file_count_logs(jpg, raw):
-    if raw == 0:
+    if jpg == 0:
+        print("Didn't rename any files.")
+    elif raw == 0:
         print('Done! Renamed '+\
             str(jpg)+\
             ' JPG files. ')
@@ -115,11 +117,12 @@ def rename_files(path, files_count):
         renamed_raw_files_count = 0
         scanned_files_count = 0
         attribute_errors = []
+        print('Scanning...')
         for root, dirs, files in os.walk(path):
             for f in files:
                 # print(join(root, f))
                 progress_percentage = (scanned_files_count / files_count) * 100
-                print('Renaming. Progress: ' + "%.2f" % round(progress_percentage, 2) + '%. File: ' + join(root, f))
+                print('Progress: ' + "%.2f" % round(progress_percentage, 2) + '%. File: ' + join(root, f))
                 if isfile(join(root, f)) and f.casefold().endswith('.jpg'):
                     try:
                         original_file_path = root + '\\' + f
@@ -129,15 +132,17 @@ def rename_files(path, files_count):
                             # renaming JPG file
                             new_filename = build_new_filename(selected_data)
                             new_file_path = root + '\\' + new_filename + '.jpg'
-                            rename_file(original_file_path, new_file_path)
-                            renamed_jpg_files_count = renamed_jpg_files_count + 1
+                            if original_file_path.lower() != new_file_path.lower():
+                                rename_file(original_file_path, new_file_path)
+                                renamed_jpg_files_count = renamed_jpg_files_count + 1
                             f_raw = check_for_raw_file(root, f)
                             if f_raw:
                                 # renaming NEF file
                                 original_file_path = root + '\\' + f_raw
                                 new_file_path = root + '\\' + new_filename + '.nef'
-                                rename_file(original_file_path, new_file_path)
-                                renamed_raw_files_count = renamed_raw_files_count + 1
+                                if original_file_path.lower() != new_file_path.lower():
+                                    rename_file(original_file_path, new_file_path)
+                                    renamed_raw_files_count = renamed_raw_files_count + 1
                     except AttributeError:
                         attribute_errors.append(original_file_path)
                 scanned_files_count = scanned_files_count + 1
