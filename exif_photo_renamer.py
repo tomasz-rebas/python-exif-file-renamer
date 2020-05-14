@@ -3,7 +3,6 @@ from PIL import Image
 from PIL.ExifTags import TAGS
 
 # imports for reading filenames
-from os import listdir
 from os.path import isfile, join
 
 # import for file renaming
