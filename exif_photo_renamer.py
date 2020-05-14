@@ -82,17 +82,19 @@ def rename_files(path, files_count):
                             # renaming JPG file
                             new_filename = build_new_filename(selected_data)
                             new_file_path = root + '\\' + new_filename + '.jpg'
-                            # os.rename(original_file_path, new_file_path)
+                            os.rename(original_file_path, new_file_path)
                             renamed_jpg_files_count = renamed_jpg_files_count + 1
                             f_raw = check_for_raw_file(root, f)
                             if f_raw:
                                 # renaming NEF file
                                 original_file_path = root + '\\' + f_raw
                                 new_file_path = root + '\\' + new_filename + '.nef'
-                                # os.rename(original_file_path, new_file_path)
+                                os.rename(original_file_path, new_file_path)
                                 renamed_raw_files_count = renamed_raw_files_count + 1
                     except AttributeError:
                         attribute_errors.append(original_file_path)
+                    except FileExistsError:
+                        {}
                 scanned_files_count = scanned_files_count + 1
         print()
         if len(attribute_errors) == 1:
