@@ -86,6 +86,29 @@ def rename_file(original_file_path, new_file_path):
     except FileExistsError:
         rename_file(original_file_path, handle_duplicate_filename(new_file_path))
 
+def print_attribute_error_logs(attribute_errors):
+    if len(attribute_errors) == 1:
+        print("Warning! AttributeError has occured. This file couldn't be renamed:")
+        print(attribute_errors[0])
+    elif len(attribute_errors) > 1:
+        print("Warning! AttributeError has occured. The following files couldn't be renamed:")
+        for f in attribute_errors:
+            print(f)
+
+def print_file_count_logs(jpg, raw):
+    if raw == 0:
+        print('Done! Renamed '+\
+            str(jpg)+\
+            ' JPG files. ')
+    else:
+        print('Done! Renamed '+\
+            str(jpg)+\
+            ' JPG files and '+\
+            str(raw)+\
+            ' RAW files ('+\
+            str(jpg + raw)+\
+            ' files total).')
+
 def rename_files(path, files_count):
     try:
         renamed_jpg_files_count = 0
@@ -119,25 +142,8 @@ def rename_files(path, files_count):
                         attribute_errors.append(original_file_path)
                 scanned_files_count = scanned_files_count + 1
         print()
-        if len(attribute_errors) == 1:
-            print("Warning! AttributeError has occured. This file couldn't be renamed:")
-            print(attribute_errors[0])
-        elif len(attribute_errors) > 1:
-            print("Warning! AttributeError has occured. The following files couldn't be renamed:")
-            for f in attribute_errors:
-                print(f)
-        if renamed_raw_files_count == 0:
-            print('Done! Renamed '+\
-                str(renamed_jpg_files_count)+\
-                ' JPG files. ')
-        else:
-            print('Done! Renamed '+\
-                str(renamed_jpg_files_count)+\
-                ' JPG files and '+\
-                str(renamed_raw_files_count)+\
-                ' RAW files ('+\
-                str(renamed_jpg_files_count + renamed_raw_files_count)+\
-                ' files total).')
+        print_attribute_error_logs(attribute_errors)
+        print_file_count_logs(renamed_jpg_files_count, renamed_raw_files_count)
 
     except FileNotFoundError:
         print('Error: file not found. Please make sure you provided correct path.')
