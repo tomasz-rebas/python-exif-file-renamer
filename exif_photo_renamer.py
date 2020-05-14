@@ -172,6 +172,6 @@ try:
         if choice in yes:
             rename_files(path, files_count)
     else:
-        print('No files found in the directory.')
+        print('No files found in the directory. Make sure you provided a correct path.')
 except IndexError:
     print('Error: no argument provided. Please provide an absolute path to the directory containing files you want to rename.')
