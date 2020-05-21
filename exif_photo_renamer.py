@@ -40,7 +40,7 @@ def build_new_filename(selected_data):
     new_filename = ''
     selected_data['DateTimeOriginal'] = selected_data['DateTimeOriginal'].replace(':', '')
     selected_data['DateTimeOriginal'] = selected_data['DateTimeOriginal'].replace(' ', '_')
-    new_filename += selected_data['DateTimeOriginal']
+    new_filename += selected_data['DateTimeOriginal'][2:]
     new_filename += selected_data['SubsecTimeOriginal'] + '_'
     new_filename += str(int(selected_data['FocalLength'][0] / selected_data['FocalLength'][1])) + 'mm_'
 
