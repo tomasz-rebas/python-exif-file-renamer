@@ -49,14 +49,12 @@ def handle_duplicate_filename(path):
     file_extension = filename_splitted[-1].split('.')[1]
 
     if filename_splitted[-1].startswith('ISO'):
-        # print(path[:-4] + '_2.' + file_extension)
         return path[:-4] + '_2.' + file_extension
     else: # last fragment must be a number
         last_filename_segment = str(int(last_filename_segment) + 1)
         filename_splitted[-1] = last_filename_segment + '.' + file_extension
         filename = '_'.join(filename_splitted)
         path_splitted[-1] = filename
-        # print('\\'.join(path_splitted))
         return '\\'.join(path_splitted)
 
 def rename_file(original_file_path, new_file_path):
