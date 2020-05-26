@@ -1,7 +1,3 @@
-# imports for EXIF data export
-from PIL import Image
-from PIL.ExifTags import TAGS
-
 # imports for reading filenames
 from os.path import isfile, join
 
@@ -11,24 +7,8 @@ import os
 # import for using arguments
 import sys
 
-def get_exif(filename):
-    image = Image.open(filename)
-    image.verify()
-    return image._getexif()
-
-# not need to call this one
-def get_labeled_exif(exif):
-    labeled = {}
-    for (key, val) in exif.items():
-        labeled[TAGS.get(key)] = val
-    return labeled
-
-def get_selected_exif(exif):
-    selected_data = {'DateTimeOriginal': '', 'MaxApertureValue': '', 'FocalLength': '', 'SubsecTimeOriginal': '', 'ExposureTime': '', 'ISOSpeedRatings': ''}
-    for (key, val) in exif.items():
-        if TAGS.get(key) in selected_data:
-            selected_data[TAGS.get(key)] = val
-    return selected_data
+import console_messages
+import exif_reader
 
 def check_for_empty_values(selected_data):
     for key in selected_data:
@@ -85,31 +65,6 @@ def rename_file(original_file_path, new_file_path):
     except FileExistsError:
         rename_file(original_file_path, handle_duplicate_filename(new_file_path))
 
-def print_attribute_error_logs(attribute_errors):
-    if len(attribute_errors) == 1:
-        print("Warning! AttributeError has occured. This file couldn't be renamed:")
-        print(attribute_errors[0])
-    elif len(attribute_errors) > 1:
-        print("Warning! AttributeError has occured. The following files couldn't be renamed:")
-        for f in attribute_errors:
-            print(f)
-
-def print_file_count_logs(jpg, raw):
-    if jpg == 0:
-        print("Didn't rename any files.")
-    elif raw == 0:
-        print('Done! Renamed '+\
-            str(jpg)+\
-            ' JPG files. ')
-    else:
-        print('Done! Renamed '+\
-            str(jpg)+\
-            ' JPG files and '+\
-            str(raw)+\
-            ' RAW files ('+\
-            str(jpg + raw)+\
-            ' files total).')
-
 def rename_files(path, files_count):
     try:
         renamed_jpg_files_count = 0
@@ -125,8 +80,8 @@ def rename_files(path, files_count):
                 if isfile(join(root, f)) and f.casefold().endswith('.jpg'):
                     try:
                         original_file_path = root + '\\' + f
-                        exif = get_exif(original_file_path)
-                        selected_data = get_selected_exif(exif)
+                        exif = exif_reader.get_exif(original_file_path)
+                        selected_data = exif_reader.get_selected_exif(exif)
                         if not check_for_empty_values(selected_data):
                             # renaming JPG file
                             new_filename = build_new_filename(selected_data)
@@ -146,8 +101,8 @@ def rename_files(path, files_count):
                         attribute_errors.append(original_file_path)
                 scanned_files_count = scanned_files_count + 1
         print()
-        print_attribute_error_logs(attribute_errors)
-        print_file_count_logs(renamed_jpg_files_count, renamed_raw_files_count)
+        console_messages.print_attribute_error_logs(attribute_errors)
+        console_messages.print_file_count_logs(renamed_jpg_files_count, renamed_raw_files_count)
 
     except FileNotFoundError:
         print('Error: file not found. Please make sure you provided correct path.')
