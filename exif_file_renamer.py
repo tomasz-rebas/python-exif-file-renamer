@@ -7,6 +7,7 @@ import os
 # import for using arguments
 import sys
 
+# program's modules
 import console_messages
 import exif_reader
 
