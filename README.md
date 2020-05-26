@@ -1,6 +1,6 @@
 # How does it work?
 
-`exif_photo_renamer.py` was designed to automate renaming photo files with an information useful for photographers e.g. date, exposure time and aperture. It extracts metadata from image files and uses it to rename them.
+`exif_file_renamer.py` was designed to automate renaming photo files with an information useful for photographers e.g. date, exposure time and aperture. It extracts metadata from image files and uses it to rename them.
 
 New filename follows this pattern:
 
@@ -8,7 +8,7 @@ New filename follows this pattern:
 
 Example:
 
-`20180515_16025102_70mm_1-360s_f7.1_ISO-1600`
+`180515_16025102_70mm_1-360s_f7.1_ISO-1600`
 
 The script is looking for JPG files first, but it also checks for Nikon RAW (.nef) files of the same name and renames them as well if they're exist. 
 
@@ -36,10 +36,10 @@ And you're ready to go!
 
 # Usage
 
-Run `exif_photo_renamer.py` script and pass (as an argument) path to the folder containing photos you want to rename.
+Run `exif_file_renamer.py` script and pass (as an argument) path to the folder containing photos you want to rename.
 
 You can do this by navigating to the directory with the script and running the following command:
 
-### `python.exe exif_photo_renamer.py MyFolder`
+### `python.exe exif_file_renamer.py MyFolder`
 
 You need to specify an absolute path for the directory.
