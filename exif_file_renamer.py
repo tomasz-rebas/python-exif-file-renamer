@@ -30,7 +30,7 @@ def build_new_filename(selected_data):
     else:
         new_filename += str(selected_data['ExposureTime'][0] / 10) + 's_'
 
-    new_filename += 'f' + str(selected_data['MaxApertureValue'][0] / selected_data['MaxApertureValue'][1]) + '_'
+    new_filename += 'f' + str(selected_data['FNumber'][0] / selected_data['FNumber'][1]) + '_'
     new_filename += 'ISO-' + str(selected_data['ISOSpeedRatings'])
     
     return new_filename.replace('.0', '')

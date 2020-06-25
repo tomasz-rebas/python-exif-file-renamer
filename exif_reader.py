@@ -8,7 +8,7 @@ def get_exif(filename):
     return image._getexif()
 
 def get_selected_exif(exif):
-    selected_data = {'DateTimeOriginal': '', 'MaxApertureValue': '', 'FocalLength': '', 'SubsecTimeOriginal': '', 'ExposureTime': '', 'ISOSpeedRatings': ''}
+    selected_data = {'DateTimeOriginal': '', 'FNumber': '', 'FocalLength': '', 'SubsecTimeOriginal': '', 'ExposureTime': '', 'ISOSpeedRatings': ''}
     for (key, val) in exif.items():
         if TAGS.get(key) in selected_data:
             selected_data[TAGS.get(key)] = val
