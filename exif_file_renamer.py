@@ -23,14 +23,14 @@ def build_new_filename(selected_data):
     selected_data['DateTimeOriginal'] = selected_data['DateTimeOriginal'].replace(' ', '_')
     new_filename += selected_data['DateTimeOriginal'][2:]
     new_filename += selected_data['SubsecTimeOriginal'] + '_'
-    new_filename += str(int(selected_data['FocalLength'][0] / selected_data['FocalLength'][1])) + 'mm_'
+    new_filename += str(selected_data['FocalLength']) + 'mm_'
 
-    if selected_data['ExposureTime'][0] < selected_data['ExposureTime'][1]:
-        new_filename += str(selected_data['ExposureTime'][0] / 10) + '-' + str(selected_data['ExposureTime'][1] / 10) + 's_'
+    if selected_data['ExposureTime'] < 1:
+        new_filename += '1-' + str(1 / selected_data['ExposureTime']) + 's_'
     else:
-        new_filename += str(selected_data['ExposureTime'][0] / 10) + 's_'
+        new_filename += str(selected_data['ExposureTime']) + 's_'
 
-    new_filename += 'f' + str(selected_data['FNumber'][0] / selected_data['FNumber'][1]) + '_'
+    new_filename += 'f' + str(selected_data['FNumber']) + '_'
     new_filename += 'ISO-' + str(selected_data['ISOSpeedRatings'])
     
     return new_filename.replace('.0', '')
