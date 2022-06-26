@@ -1,5 +1,3 @@
-# imports for EXIF data export
-from PIL import Image
 import exifread
 
 def get_selected_exif(exif):
