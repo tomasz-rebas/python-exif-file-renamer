@@ -8,39 +8,36 @@ import os
 import sys
 
 # program's modules
-import console_messages
+import messages
 import exif_reader
 
-def check_for_empty_values(selected_data):
+def is_any_value_empty(selected_data):
     for key in selected_data:
         if selected_data[key] == '':
             return True
     return False
 
 def build_new_filename(selected_data):
-    new_filename = ''
-    selected_data['DateTimeOriginal'] = selected_data['DateTimeOriginal'].replace(':', '')
-    selected_data['DateTimeOriginal'] = selected_data['DateTimeOriginal'].replace(' ', '_')
-    new_filename += selected_data['DateTimeOriginal'][2:]
-    new_filename += selected_data['SubsecTimeOriginal'] + '_'
-    new_filename += str(selected_data['FocalLength']) + 'mm_'
-
-    if selected_data['ExposureTime'] < 1:
-        new_filename += '1-' + str(1 / selected_data['ExposureTime']) + 's_'
-    else:
-        new_filename += str(selected_data['ExposureTime']) + 's_'
-
-    new_filename += 'f' + str(selected_data['FNumber']) + '_'
-    new_filename += 'ISO-' + str(selected_data['ISOSpeedRatings'])
+    selected_data['EXIF DateTimeOriginal'] = selected_data['EXIF DateTimeOriginal'].replace(':', '')
+    selected_data['EXIF DateTimeOriginal'] = selected_data['EXIF DateTimeOriginal'].replace(' ', '_')
     
+    new_filename = '{timestamp}{subsec}_{focal_length}mm_{exposure_time}s_f{fnumber}_ISO-{iso}'.format(
+        timestamp = selected_data['EXIF DateTimeOriginal'][2:],
+        subsec = selected_data['EXIF SubSecTimeOriginal'],
+        focal_length = selected_data['EXIF FocalLength'],
+        exposure_time = selected_data['EXIF ExposureTime'].replace('/', '-'),
+        fnumber = get_proper_fnumber(selected_data['EXIF FNumber']),
+        iso = selected_data['EXIF ISOSpeedRatings']
+    )
+
     return new_filename.replace('.0', '')
 
-def check_for_raw_file(path, f):
-    f_raw = f.casefold().replace('.jpg', '.nef')
-    if os.path.isfile(path + '\\' + f_raw):
-        return f_raw
-    else:
-        return False
+def get_proper_fnumber(exif_fnumber):
+    proper_fnumber = exif_fnumber
+    if '/' in exif_fnumber:
+        split = exif_fnumber.split('/')
+        proper_fnumber = float(split[0]) / float(split[1])
+    return proper_fnumber
 
 def handle_duplicate_filename(path):
     path_splitted = path.split('\\')
@@ -64,8 +61,21 @@ def rename_file(original_file_path, new_file_path):
     except FileExistsError:
         rename_file(original_file_path, handle_duplicate_filename(new_file_path))
 
+def is_jpg_or_nef(f):
+    return f.casefold().endswith('.jpg') or f.casefold().endswith('.nef')
+
+def get_file_extension_suffix(f):
+    file_extension_suffix = ''
+    if f.endswith('.jpg'):
+        file_extension_suffix = '.jpg'
+    elif f.endswith('.nef'):
+        file_extension_suffix = '.nef'
+    return file_extension_suffix
+
 def rename_files(path, files_count):
     try:
+        scanned_jpg_files_count = 0
+        scanned_raw_files_count = 0
         renamed_jpg_files_count = 0
         renamed_raw_files_count = 0
         scanned_files_count = 0
@@ -73,35 +83,39 @@ def rename_files(path, files_count):
         print('Scanning...')
         for root, dirs, files in os.walk(path):
             for f in files:
-                # print(join(root, f))
-                progress_percentage = (scanned_files_count / files_count) * 100
-                print('Progress: ' + "%.2f" % round(progress_percentage, 2) + '%. File: ' + join(root, f))
-                if isfile(join(root, f)) and f.casefold().endswith('.jpg'):
+                messages.show_file_renaming_progress(scanned_files_count, files_count, join(root, f))
+                if isfile(join(root, f)) and is_jpg_or_nef(f):
                     try:
+                        file_extension_suffix = get_file_extension_suffix(f.casefold())
+                        if file_extension_suffix == '.jpg':
+                            scanned_jpg_files_count = scanned_jpg_files_count + 1
+                        elif file_extension_suffix == '.nef':
+                            scanned_raw_files_count = scanned_raw_files_count + 1
                         original_file_path = root + '\\' + f
                         exif = exif_reader.get_exif(original_file_path)
                         selected_data = exif_reader.get_selected_exif(exif)
-                        if not check_for_empty_values(selected_data):
-                            # renaming JPG file
+                        if not is_any_value_empty(selected_data):
+                            # renaming file
                             new_filename = build_new_filename(selected_data)
-                            new_file_path = root + '\\' + new_filename + '.jpg'
+                            new_file_path = root + '\\' + new_filename + file_extension_suffix
                             if original_file_path.lower() != new_file_path.lower():
                                 rename_file(original_file_path, new_file_path)
-                                renamed_jpg_files_count = renamed_jpg_files_count + 1
-                            f_raw = check_for_raw_file(root, f)
-                            if f_raw:
-                                # renaming NEF file
-                                original_file_path = root + '\\' + f_raw
-                                new_file_path = root + '\\' + new_filename + '.nef'
-                                if original_file_path.lower() != new_file_path.lower():
-                                    rename_file(original_file_path, new_file_path)
+                                if file_extension_suffix == '.jpg':
+                                    renamed_jpg_files_count = renamed_jpg_files_count + 1
+                                elif file_extension_suffix == '.nef':
                                     renamed_raw_files_count = renamed_raw_files_count + 1
                     except AttributeError:
                         attribute_errors.append(original_file_path)
                 scanned_files_count = scanned_files_count + 1
         print()
-        console_messages.print_attribute_error_logs(attribute_errors)
-        console_messages.print_file_count_logs(renamed_jpg_files_count, renamed_raw_files_count)
+        messages.print_attribute_error_logs(attribute_errors)
+        messages.print_file_count_logs(
+            scanned_jpg_files_count,
+            scanned_raw_files_count,
+            renamed_jpg_files_count,
+            renamed_raw_files_count,
+            scanned_files_count
+        )
 
     except FileNotFoundError:
         print('Error: file not found. Please make sure you provided correct path.')
@@ -118,7 +132,7 @@ try:
     print('Counting files...')
     files_count = count_files(path)
     if files_count > 0:
-        print('The program is going to iterate through ' + str(files_count) + ' files.')
+        print('The program is going to iterate through {} files.'.format(files_count))
         print('Are you sure? [y/n]')
         yes = {'yes', 'y'}
         choice = input().lower()
